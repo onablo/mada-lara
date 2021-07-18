@@ -14,7 +14,10 @@ class MasterController extends Controller
      */
     public function index()
     {
-        //
+        $masters = Master::all(); // is DB gauna visus masterius
+        //$masters -> yra objektas kolekcijos tipo
+        //https://laravel.com/docs/8.x/collections#available-methods
+        return view('master.index', ['masters' => $masters]);
     }
 
     /**
@@ -24,7 +27,7 @@ class MasterController extends Controller
      */
     public function create()
     {
-        //
+        return view('master.create');
     }
 
     /**
@@ -35,7 +38,12 @@ class MasterController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $master = new Master;
+        $master->name = $request->master_name;
+      //DB->stulpelio_vardas = Formos->name_atributas;
+        $master->surname = $request->master_surname;
+        $master->save();
+        return redirect()->route('master.index');
     }
 
     /**
@@ -57,7 +65,7 @@ class MasterController extends Controller
      */
     public function edit(Master $master)
     {
-        //
+        return view('master.edit', ['master' => $master]);
     }
 
     /**
@@ -69,7 +77,11 @@ class MasterController extends Controller
      */
     public function update(Request $request, Master $master)
     {
-        //
+        $master->name = $request->master_name;
+        //DB->stulpelio_vardas = Formos->name_atributas;
+        $master->surname = $request->master_surname;
+        $master->save();
+        return redirect()->route('master.index');
     }
 
     /**
@@ -80,6 +92,10 @@ class MasterController extends Controller
      */
     public function destroy(Master $master)
     {
-        //
+        if ($master->masterHasOutfits->count()){
+            return 'Trinti negalima, nes turi nebaigtų darbų';
+        }
+        $master->delete();
+        return redirect()->route('master.index');
     }
 }
