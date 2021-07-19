@@ -1,5 +1,37 @@
 @import url(https://fonts.googleapis.com/css?family=Nunito);
 @charset "UTF-8";
+.list-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-left: 10px;
+}
+.list-container__content {
+  letter-spacing: 0.2px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  flex-direction: column;
+  color: #494949;
+  font-size: 16px;
+}
+.list-container__content__master {
+  color: blue;
+  font-style: italic;
+  font-size: 14px;
+}
+.list-container__content__outfit {
+  letter-spacing: normal;
+}
+.list-container__buttons {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.list-container__buttons * {
+  margin: 0 2px;
+}
+
 /*!
  * Bootstrap v4.6.0 (https://getbootstrap.com/)
  * Copyright 2011-2021 The Bootstrap Authors

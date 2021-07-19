@@ -7,6 +7,13 @@ use Illuminate\Http\Request;
 
 class MasterController extends Controller
 {
+
+    //public function __construct()     -pradzioje reikalauja prisiloginti, darreikia deti ir OutfitControleri
+    //{
+    //    $this->middleware('auth');
+    //}
+
+
     /**
      * Display a listing of the resource.
      *
@@ -43,7 +50,7 @@ class MasterController extends Controller
       //DB->stulpelio_vardas = Formos->name_atributas;
         $master->surname = $request->master_surname;
         $master->save();
-        return redirect()->route('master.index');
+        return redirect()->route('master.index')->with('success_message', 'New master has arrived.');
     }
 
     /**
@@ -81,7 +88,7 @@ class MasterController extends Controller
         //DB->stulpelio_vardas = Formos->name_atributas;
         $master->surname = $request->master_surname;
         $master->save();
-        return redirect()->route('master.index');
+        return redirect()->route('master.index')->with('success_message', 'Master was edited.');
     }
 
     /**
@@ -93,9 +100,9 @@ class MasterController extends Controller
     public function destroy(Master $master)
     {
         if ($master->masterHasOutfits->count()){
-            return 'Trinti negalima, nes turi nebaigtų darbų';
+            return redirect()->back()->with('success_message', 'Master has an unfinished orders!  Cannot be deleted!');
         }
         $master->delete();
-        return redirect()->route('master.index');
+        return redirect()->route('master.index')->with('success_message', 'Master came out.');
     }
 }
