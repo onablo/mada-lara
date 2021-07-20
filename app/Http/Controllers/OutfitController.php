@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Outfit;
 use App\Models\Master;
 use Illuminate\Http\Request;
+use Validator;
 
 class OutfitController extends Controller
 {
@@ -13,10 +14,68 @@ class OutfitController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $outfits = Outfit::all();
-        return view('outfit.index', ['outfits' => $outfits]);
+        
+        // $outfits = Outfit::orderBy('size', 'desc')->get();
+        $dir = 'asc';
+        $sort = 'type';
+        $defaultMaster = 0;
+        $masters = Master::all();
+        $s = '';
+        // Rūšiavimas
+        if ($request->sort_by && $request->dir) {
+            if ('type' == $request->sort_by && 'asc' == $request->dir) {
+                $outfits = Outfit::orderBy('type')->get();
+            }
+            elseif ('type' == $request->sort_by && 'desc' == $request->dir) {
+                $outfits = Outfit::orderBy('type', 'desc')->get();
+                $dir = 'desc';
+            }
+            elseif ('size' == $request->sort_by && 'asc' == $request->dir) {
+                $outfits = Outfit::orderBy('size')->get();
+                $sort = 'size';
+            }
+            elseif ('size' == $request->sort_by && 'desc' == $request->dir) {
+                $outfits = Outfit::orderBy('size', 'desc')->get();
+                $dir = 'desc';
+                $sort = 'size';
+            }
+            else {
+                $outfits = Outfit::all();
+            }
+        }
+
+        // Filtravimas
+        elseif ($request->master_id) {
+            $outfits = Outfit::where('master_id', (int)$request->master_id)->get();
+            $defaultMaster = (int)$request->master_id;
+        }
+
+        // Paieška
+        
+        elseif ($request->s) {
+            $outfits = Outfit::where('type', 'like', '%'.$request->s.'%')->get();
+            $s = $request->s;
+        }
+        elseif ($request->do_search) {
+            $outfits = Outfit::where('type', 'like', '')->get();
+
+        }
+        else {
+            $outfits = Outfit::all();
+        }
+
+        
+
+        return view('outfit.index', [
+            'outfits' => $outfits,
+            'dir' => $dir,
+            'sort' => $sort,
+            'masters' => $masters,
+            'defaultMaster' => $defaultMaster,
+            's' => $s
+        ]);
     }
 
     /**
@@ -38,6 +97,22 @@ class OutfitController extends Controller
      */
     public function store(Request $request)
     {
+        
+        $validator = Validator::make($request->all(),
+            [
+                'outfit_type' => ['required', 'min:3', 'max:50'],
+                'outfit_color' => ['required', 'min:3', 'max:20'],
+                'outfit_size' => ['required', 'integer', 'min:5', 'max:22'],
+                'outfit_about' => ['required'],
+                'master_id' => ['required', 'integer', 'min:1'],
+            ]
+        );
+
+        if ($validator->fails()) {
+            $request->flash();
+            return redirect()->back()->withErrors($validator);
+        }
+        
         $outfit = new Outfit;
         $outfit->type = $request->outfit_type;
         $outfit->color = $request->outfit_color;
@@ -45,7 +120,7 @@ class OutfitController extends Controller
         $outfit->about = $request->outfit_about;
         $outfit->master_id = $request->master_id;
         $outfit->save();
-        return redirect()->route('outfit.index')->with('success_message', 'New outfit has produced.');
+        return redirect()->route('outfit.index')->with('success_message', 'New outfit has arrived.');
     }
 
     /**
@@ -86,7 +161,7 @@ class OutfitController extends Controller
         $outfit->about = $request->outfit_about;
         $outfit->master_id = $request->master_id;
         $outfit->save();
-        return redirect()->route('outfit.index')->with('success_message', 'Outfit was edited!');;
+        return redirect()->route('outfit.index')->with('success_message', 'Outfit was edited.');
     }
 
     /**
@@ -98,6 +173,6 @@ class OutfitController extends Controller
     public function destroy(Outfit $outfit)
     {
         $outfit->delete();
-        return redirect()->route('outfit.index')->with('success_message', 'Outfit was deleted!');;
+        return redirect()->route('outfit.index')->with('success_message', 'Outfit was deleted.');
     }
 }

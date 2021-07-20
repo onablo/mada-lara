@@ -1,6 +1,4 @@
-
-
- @extends('layouts.app')
+@extends('layouts.app')
 
 @section('content')
 <div class="container">
@@ -8,25 +6,24 @@
        <div class="col-md-8">
            <div class="card">
                <div class="card-header">Edit Outfit</div>
-
                <div class="card-body">
                  <form method="POST" action="{{route('outfit.update', [$outfit])}}">
                     <div class="form-group">
-                        <label>Type</label>
+                        <label>Type: </label>
                         <input type="text" class="form-control" name="outfit_type" value="{{$outfit->type}}">
                         <small class="form-text text-muted">Enter outfit type.</small>
-                      </div>
-                      <div class="form-group">
-                        <label>Color</label>
+                    </div>
+                    <div class="form-group">
+                        <label>Color: </label>
                         <input type="text" class="form-control" name="outfit_color" value="{{$outfit->color}}">
-                        <small class="form-text text-muted">Enter color.</small>
-                      </div>
-                      <div class="form-group">
-                        <label>Size</label>
+                        <small class="form-text text-muted">Which color.</small>
+                    </div>
+                    <div class="form-group">
+                        <label>Size: </label>
                         <input type="text" class="form-control" name="outfit_size" value="{{$outfit->size}}">
-                        <small class="form-text text-muted">Enter outfit size.</small>
-                      </div>
-                      <div class="form-group">
+                        <small class="form-text text-muted">Outfit size.</small>
+                    </div>
+                    <div class="form-group">
                         <label>About: </label>
                         <textarea name="outfit_about" class="form-control" id="summernote">{{$outfit->about}}</textarea>
                         <small class="form-text text-muted">About outfit</small>
@@ -49,9 +46,4 @@
        </div>
    </div>
 </div>
-<script>
-$(document).ready(function() {
-   $('#summernote').summernote();
- });
-</script>
 @endsection

@@ -4,15 +4,15 @@ namespace App\Http\Controllers;
 
 use App\Models\Master;
 use Illuminate\Http\Request;
+use Validator;
 
 class MasterController extends Controller
 {
-
-    //public function __construct()     -pradzioje reikalauja prisiloginti, darreikia deti ir OutfitControleri
-    //{
-    //    $this->middleware('auth');
-    //}
-
+    
+    // public function __construct()
+    // {
+    //     $this->middleware('auth');
+    // }
 
     /**
      * Display a listing of the resource.
@@ -45,6 +45,20 @@ class MasterController extends Controller
      */
     public function store(Request $request)
     {
+        
+        $validator = Validator::make($request->all(),
+            [
+                'master_name' => ['required', 'min:3', 'max:64'],
+                'master_surname' => ['required', 'min:3', 'max:64'],
+            ]
+        );
+
+        if ($validator->fails()) {
+            $request->flash();
+            return redirect()->back()->withErrors($validator);
+        }
+ 
+        
         $master = new Master;
         $master->name = $request->master_name;
       //DB->stulpelio_vardas = Formos->name_atributas;
@@ -84,11 +98,23 @@ class MasterController extends Controller
      */
     public function update(Request $request, Master $master)
     {
+        $validator = Validator::make($request->all(),
+            [
+                'master_name' => ['required', 'min:3', 'max:64'],
+                'master_surname' => ['required', 'min:3', 'max:64'],
+            ]
+        );
+
+        if ($validator->fails()) {
+            $request->flash();
+            return redirect()->back()->withErrors($validator);
+        }
+        
         $master->name = $request->master_name;
         //DB->stulpelio_vardas = Formos->name_atributas;
         $master->surname = $request->master_surname;
         $master->save();
-        return redirect()->route('master.index')->with('success_message', 'Master was edited.');
+        return redirect()->route('master.index')->with('success_message', 'Der master was edited.');
     }
 
     /**
@@ -100,9 +126,9 @@ class MasterController extends Controller
     public function destroy(Master $master)
     {
         if ($master->masterHasOutfits->count()){
-            return redirect()->back()->with('success_message', 'Master has an unfinished orders!  Cannot be deleted!');
+            return redirect()->back()->with('info_message', 'There is job to do. Can\'t delete.');
         }
         $master->delete();
-        return redirect()->route('master.index')->with('success_message', 'Master came out.');
+        return redirect()->route('master.index')->with('success_message', 'Master gone.');
     }
 }
